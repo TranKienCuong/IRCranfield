@@ -14,14 +14,11 @@ public class IREngine {
     private HashMap<String, Boolean> stopwordHashMap;
     private HashMap<String, WordProperties> postingList;
 
-    //public HashMap<String, Double> queryWordWeights;
-
     public IREngine(String lemmatizedWordsDirectory, String stopwordsPath) {
         this.lemmatizedWordsDirectory = lemmatizedWordsDirectory;
         this.stopwordsPath = stopwordsPath;
         lemmatization = new Lemmatization();
         postingList = new HashMap<String, WordProperties>();
-        //queryWordWeights = new HashMap<String, Double>();
         bufferedReader = null;
         fileReader = null;
     }
@@ -130,44 +127,7 @@ public class IREngine {
         if (query == null)
             return new ArrayList<>();
 
-//        List<String> lemmaWords = lemmatization.lemmatize(query);
-
-//        // Calculate 'tf' for each query-word
-//        for (String queryWord: lemmaWords) {
-//            // This queryWord is a stopword
-//            if (stopwordHashMap.get(queryWord) != null) {
-//                continue;
-//            }
-//            if (queryWordWeights.get(queryWord) == null) {
-//                Double tf = 1d;
-//                // Increase 'tf' by 1
-//                queryWordWeights.put(queryWord, tf);
-//                continue;
-//            }
-//            Double tf = queryWordWeights.get(queryWord);
-//            tf += 1;
-//        }
-//
-//        // Calculate tf.idf for each query-word
-//        for (String queryWord: queryWordWeights.keySet()) {
-//            WordProperties wordProperties = postingList.get(queryWord);
-//            // If this word isn't in vocabulary;
-//            if (wordProperties == null) {
-//                queryWordWeights.put(queryWord, 0.0);
-//                continue;
-//            }
-//
-//            Double idf = wordProperties.getIdf();
-//            Double weight = queryWordWeights.get(queryWord); // tf
-//            // Normalize tf
-//            weight = 1 + Math.log(lemmaWords.size() / weight) ;
-//            // Calculate tf.idf
-//            weight = weight * idf;
-//            queryWordWeights.put(queryWord, weight);
-//        }
-
         query.calculateWeights();
-        //ArrayList<Double> queryWordWeights = new ArrayList<>(query.wordWeights.values());
 
         HashMap<Integer, Vector<Double>> docWordWeightHashMap = new HashMap<>();
         Vector<Double> queryWordWeights = new Vector<>();
@@ -255,9 +215,8 @@ public class IREngine {
         return relevantDocs;
     }
 
+    // This class represents a query used for a specific instance of IREngine
     public class Query {
-        //private static Lemmatization lemmatization = new Lemmatization();
-
         private String query;
         private List<String> lemmaWords;
         public HashMap<String, Double> wordWeights;
@@ -268,7 +227,7 @@ public class IREngine {
             lemmaWords = lemmatization.lemmatize(query);
         }
 
-        public void calculateWeights() {
+        private void calculateWeights() {
             // Calculate 'tf' for each query-word
             for (String queryWord: lemmaWords) {
                 // This queryWord is a stopword

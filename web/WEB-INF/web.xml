@@ -5,11 +5,11 @@
          version="4.0">
     <servlet>
         <servlet-name>MyServlet</servlet-name>
-        <servlet-class>MyServlet</servlet-class>
+        <servlet-class>IRServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>MyServlet</servlet-name>
-        <url-pattern>/MyServlet</url-pattern>
+        <url-pattern>/IRServlet</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -1,0 +1,24 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="IRCranfield:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/IRCranfield_jar</output-path>
+    <root id="archive" name="IRCranfield.jar">
+      <element id="module-output" name="IRCranfield" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/xom.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/jollyday.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/protobuf.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/ejml-0.23.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/joda-time.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/slf4j-api.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/javax.json.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/slf4j-simple.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/ejml-0.23-src.zip" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/xom-1.2.10-src.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/joda-time-2.9-sources.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/jollyday-0.4.9-sources.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/stanford-corenlp-3.9.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/javax.json-api-1.0-sources.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/stanford-corenlp-3.9.1-models.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/stanford-corenlp-3.9.1-sources.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

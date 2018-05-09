@@ -4,7 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
 
-public class MyServlet extends HttpServlet {
+public class IRServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();

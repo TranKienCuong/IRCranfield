@@ -1,0 +1,53 @@
+h2.center {
+    color: #005cbf;
+    margin: 10px auto;
+    text-align: center;
+}
+
+form.center {
+    margin : 10px auto;
+    text-align: center;
+}
+
+input[type="text"].irtextbox {
+    width: 50%;
+    margin : 10px;
+    border-radius: 5px;
+    border: 1px solid #6c757d;
+    padding: 6px;
+    text-align: center;
+}
+input[type="text"].irtextbox:hover {
+    border-color: #005cbf;
+}
+input[type="text"].irtextbox:focus {
+    border-width: 2px;
+    border-color: #007bff;
+}
+
+input[type="submit"].irbutton {
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: 3px solid dodgerblue;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+input[type="submit"].irbutton:hover {
+    background-color: dodgerblue;
+}
+input[type="submit"].irbutton:focus {
+    background-color: dodgerblue;
+    border-color: #005cbf;
+}
+
+table.irtable {
+    width: 50%;
+    text-align: center;
+}
+
+p.irp {
+    font-size: large;
+    font-style: italic;
+}
