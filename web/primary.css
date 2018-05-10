@@ -4,25 +4,19 @@ h2.center {
     text-align: center;
 }
 
-form.center {
-    margin : 10px auto;
-    text-align: center;
-}
-
 input[type="text"].irtextbox {
     width: 50%;
     margin : 10px;
     border-radius: 5px;
-    border: 1px solid #6c757d;
+    border: 1px solid lightsteelblue;
     padding: 6px;
     text-align: center;
 }
 input[type="text"].irtextbox:hover {
-    border-color: #005cbf;
+    border-color: dodgerblue;
 }
 input[type="text"].irtextbox:focus {
-    border-width: 2px;
-    border-color: #007bff;
+    border-color: dodgerblue;
 }
 
 input[type="submit"].irbutton {
@@ -35,11 +29,10 @@ input[type="submit"].irbutton {
     padding-bottom: 5px;
 }
 input[type="submit"].irbutton:hover {
-    background-color: dodgerblue;
+    background-color: aliceblue;
 }
 input[type="submit"].irbutton:focus {
-    background-color: dodgerblue;
-    border-color: #005cbf;
+    background-color: aliceblue;
 }
 
 table.irtable {

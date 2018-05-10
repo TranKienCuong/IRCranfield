@@ -10,6 +10,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="primary.css" rel="stylesheet">
     <link href="bootstrap.min.css" rel="stylesheet">
     <%--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">--%>
@@ -17,52 +18,103 @@
 </head>
 
 <body class="container">
+<%
+    IREngine irEngine = (IREngine)getServletConfig().getServletContext().getAttribute("engine");
+    String searchString = request.getParameter("query");
+    if (searchString == null)
+        searchString = "";
+    IREngine.Query query = irEngine.new Query(searchString);
+    List<Doc> relevantDocs = irEngine.search(query);
+
+    final int resultsPerPage = 20;
+    int pageNumber;
+    try {
+        pageNumber = Integer.parseInt(request.getParameter("page"));
+    } catch (NumberFormatException ex) {
+        pageNumber = 1;
+    }
+    int startResult = resultsPerPage * (pageNumber - 1);
+    int numberOfResults = relevantDocs.size();
+    int numberOfPages = (numberOfResults - 1) / resultsPerPage + 1;
+%>
+
 <h2 class="center">
     Cranfield Information Retrieval
 </h2>
 
-<form action="index.jsp" method="post" class="center">
-    <label for="1">Type query: </label>
-    <input type="text" name="searchTextbox" id="1" title="Search anything" class="irtextbox"/>
-    <input type="submit" value="Search" class="irbutton"/>
+<form action="index.jsp" method="post" class="form-inline justify-content-center">
+    <label for="query">Type query: </label>
+    <input type="text" name="query" id="query" title="Search anything" class="form-control irtextbox" value="<%=searchString%>"/>
+    <input type="submit" value="Search" class="form-control irbutton"/>
+    <input type="hidden" name="page"/>
 </form>
 
+<%
+    if (searchString.equals(""))
+        return;
+    if (startResult < 0 || startResult > numberOfResults) {
+        out.print("Page not found!");
+        return;
+    }
+%>
 
+<%--Show previous, next and other page buttons--%>
+<nav id="pages">
+    <ul class="pagination justify-content-center">
+        <%
+            if (pageNumber == 1)
+                out.print("<li class='page-item disabled'><a class='page-link' href='#'>Previous</a></li>");
+            else
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + (pageNumber - 1) + "'>Previous</a></li>");
+
+            for (int i = 1; i <= numberOfPages; i++) {
+                if (i == pageNumber)
+                    out.print("<li class='page-item active'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + i + "'>" + i + "</a></li>");
+                else
+                    out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + i + "'>" + i + "</a></li>");
+            }
+
+            if (pageNumber == numberOfPages)
+                out.print("<li class='page-item disabled'><a class='page-link' href='#'>Next</a></li>");
+            else
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + (pageNumber + 1) + "'>Next</a></li>");
+        %>
+    </ul>
+</nav>
 
 <div class="row">
+    <%--Show results--%>
     <div class="col-sm-8">
         <%
-            IREngine irEngine = (IREngine)getServletConfig().getServletContext().getAttribute("engine");
-            String searchString = request.getParameter("searchTextbox");
-            IREngine.Query query = irEngine.new Query(searchString);
-            List<Doc> relevantDocs = irEngine.search(query);
-            int i = 1;
-            if (relevantDocs.size() > 0) {
-                out.print("<p class=\"irp\">Result:</p>");
+            if (numberOfResults > 0)
+                out.print("<p class='irp'>Found " + numberOfResults + " results:</p>");
+            else {
+                out.print("<p class='irp'>No results!</p>");
+                return;
             }
-            for (Doc doc: relevantDocs) {
+            for (int i = startResult; i < startResult + resultsPerPage && i < numberOfResults; i++) {
+                Doc doc = relevantDocs.get(i);
                 out.println("<a href='Cranfield/" + doc.doxIndex + ".txt'>" + doc.doxIndex + ".txt</a>");
-                out.println("<br>Rank: " + (i++));
+                out.println("<br>Rank: " + (i + 1));
                 out.println("<br>Relevant value: " + doc.relevantValue + "<br><br>");
             }
         %>
-
     </div>
+
+    <%--Show table of query word weights--%>
     <div class="col-sm-4">
-        <%--<div class="table-responsive">--%>
-        <table class="table table-striped table-bordered">
-            <%
-                if (relevantDocs.size() > 0) {
-                    out.print("<p class=\"irp\">Query word weights:</p>");
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <%
+                    out.print("<p class='irp'>Query word weights:</p>");
                     out.print("<tr><th>Word</th><th>Weight</th></tr>");
-                }
-                for (String queryWord: query.wordWeights.keySet()) {
-                    out.println("<tr><td>" + queryWord + "</td>");
-                    out.println("<td>" + query.wordWeights.get(queryWord) + "</tr>");
-                }
-            %>
-        </table>
-        <%--</div>--%>
+                    for (String queryWord: query.wordWeights.keySet()) {
+                        out.println("<tr><td>" + queryWord + "</td>");
+                        out.println("<td>" + query.wordWeights.get(queryWord) + "</tr>");
+                    }
+                %>
+            </table>
+        </div>
     </div>
 </div>
 </body>
