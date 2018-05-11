@@ -23,8 +23,16 @@
     String searchString = request.getParameter("query");
     if (searchString == null)
         searchString = "";
-    IREngine.Query query = irEngine.new Query(searchString);
-    List<Doc> relevantDocs = irEngine.search(query);
+    IREngine.Query query = (IREngine.Query) session.getAttribute("query");
+    List<Doc> relevantDocs = (List<Doc>) session.getAttribute("relevantDocs");
+    String s = (String) session.getAttribute("searchString");
+    if (!searchString.equals(s) || query == null || relevantDocs == null) {
+        query = irEngine.new Query(searchString);
+        relevantDocs = irEngine.search(query);
+        session.setAttribute("query", query);
+        session.setAttribute("relevantDocs", relevantDocs);
+        session.setAttribute("searchString", searchString);
+    }
 
     final int resultsPerPage = 20;
     int pageNumber;
@@ -60,24 +68,50 @@
 
 <%--Show previous, next and other page buttons--%>
 <nav id="pages">
-    <ul class="pagination justify-content-center">
+    <ul class="pagination">
         <%
-            if (pageNumber == 1)
+            // previous and first page button
+            if (pageNumber == 1) {
+                out.print("<li class='page-item disabled'><a class='page-link' href='#'>&laquo;</a></li>");
                 out.print("<li class='page-item disabled'><a class='page-link' href='#'>Previous</a></li>");
-            else
+            }
+            else {
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + 1 + "'>&laquo;</a></li>");
                 out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + (pageNumber - 1) + "'>Previous</a></li>");
-
-            for (int i = 1; i <= numberOfPages; i++) {
-                if (i == pageNumber)
-                    out.print("<li class='page-item active'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + i + "'>" + i + "</a></li>");
-                else
-                    out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + i + "'>" + i + "</a></li>");
             }
 
-            if (pageNumber == numberOfPages)
-                out.print("<li class='page-item disabled'><a class='page-link' href='#'>Next</a></li>");
+            final int offset = 3;
+            int start = pageNumber - offset;
+            int end = pageNumber + offset;
+
+            // some pages buttons before current page
+            if (start > 1)
+                out.print("<li class='page-item disabled'><a class='page-link' href='#'>...</a></li>");
             else
+                start = 1;
+            for (int i = start; i < pageNumber; i++)
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + i + "'>" + i + "</a></li>");
+
+            // current page button
+            out.print("<li class='page-item active'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + pageNumber + "'>" + pageNumber + "</a></li>");
+
+            // some pages buttons after current page
+            if (end > numberOfPages)
+                end = numberOfPages;
+            for (int i = pageNumber + 1; i <= end; i++)
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + i + "'>" + i + "</a></li>");
+            if (pageNumber + offset < numberOfPages)
+                out.print("<li class='page-item disabled'><a class='page-link' href='#'>...</a></li>");
+
+            // next and last page button
+            if (pageNumber == numberOfPages) {
+                out.print("<li class='page-item disabled'><a class='page-link' href='#'>Next</a></li>");
+                out.print("<li class='page-item disabled'><a class='page-link' href='#'>&raquo;</a></li>");
+            }
+            else {
                 out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + (pageNumber + 1) + "'>Next</a></li>");
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + numberOfPages + "'>&raquo;</a></li>");
+            }
         %>
     </ul>
 </nav>

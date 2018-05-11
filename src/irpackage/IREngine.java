@@ -174,23 +174,6 @@ public class IREngine {
             }
         }
 
-//		for (Double weight: queryWordWeights) {
-//			System.out.println(weight + "\t");
-//		}
-//		for (Integer docIndex: docWordWeightHashMap.keySet()) {
-//			Vector<Double> wordWeights = docWordWeightHashMap.get(docIndex);
-//			boolean hasNullValue = false;
-//			for (Double weight: wordWeights) {
-//				if (weight == null) {
-//					hasNullValue = true;
-//					break;
-//				}
-//			}
-//			if (!hasNullValue) {
-//				System.out.println("Doc index: " + docIndex);
-//			}
-//		}
-
         List<Doc> relevantDocs = new ArrayList<Doc>();
         // Calculate Cosine similarity
         for (Integer docIndex: docWordWeightHashMap.keySet()) {
