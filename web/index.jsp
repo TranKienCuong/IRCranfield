@@ -1,6 +1,7 @@
-<%@ page import="irpackage.*" %>
-<%@ page import="java.util.*" %>
-<%@ page import="java.io.*" %><%--
+<%@ page import="irpackage.Doc" %>
+<%@ page import="irpackage.IREngine" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.net.URLEncoder" %><%--
   Created by IntelliJ IDEA.
   User: Kien Cuong
   Date: 5/3/2018
@@ -76,8 +77,8 @@
                 out.print("<li class='page-item disabled'><a class='page-link' href='#'>Previous</a></li>");
             }
             else {
-                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + 1 + "'>&laquo;</a></li>");
-                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + (pageNumber - 1) + "'>Previous</a></li>");
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + URLEncoder.encode(searchString, "UTF-8") + "&page=" + 1 + "'>&laquo;</a></li>");
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + URLEncoder.encode(searchString, "UTF-8") + "&page=" + (pageNumber - 1) + "'>Previous</a></li>");
             }
 
             final int offset = 3;
@@ -90,16 +91,16 @@
             else
                 start = 1;
             for (int i = start; i < pageNumber; i++)
-                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + i + "'>" + i + "</a></li>");
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + URLEncoder.encode(searchString, "UTF-8") + "&page=" + i + "'>" + i + "</a></li>");
 
             // current page button
-            out.print("<li class='page-item active'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + pageNumber + "'>" + pageNumber + "</a></li>");
+            out.print("<li class='page-item active'><a class='page-link' href='index.jsp?query=" + URLEncoder.encode(searchString, "UTF-8") + "&page=" + pageNumber + "'>" + pageNumber + "</a></li>");
 
             // some pages buttons after current page
             if (end > numberOfPages)
                 end = numberOfPages;
             for (int i = pageNumber + 1; i <= end; i++)
-                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + i + "'>" + i + "</a></li>");
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + URLEncoder.encode(searchString, "UTF-8") + "&page=" + i + "'>" + i + "</a></li>");
             if (pageNumber + offset < numberOfPages)
                 out.print("<li class='page-item disabled'><a class='page-link' href='#'>...</a></li>");
 
@@ -109,8 +110,8 @@
                 out.print("<li class='page-item disabled'><a class='page-link' href='#'>&raquo;</a></li>");
             }
             else {
-                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + (pageNumber + 1) + "'>Next</a></li>");
-                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + searchString + "&page=" + numberOfPages + "'>&raquo;</a></li>");
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + URLEncoder.encode(searchString, "UTF-8") + "&page=" + (pageNumber + 1) + "'>Next</a></li>");
+                out.print("<li class='page-item'><a class='page-link' href='index.jsp?query=" + URLEncoder.encode(searchString, "UTF-8") + "&page=" + numberOfPages + "'>&raquo;</a></li>");
             }
         %>
     </ul>
@@ -140,7 +141,7 @@
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <%
-                    out.print("<p class='irp'>Query word weights:</p>");
+                    out.print("<p class='irp'>Table of query word weights:</p>");
                     out.print("<tr><th>Word</th><th>Weight</th></tr>");
                     for (String queryWord: query.wordWeights.keySet()) {
                         out.println("<tr><td>" + queryWord + "</td>");
