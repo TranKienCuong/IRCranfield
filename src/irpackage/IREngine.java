@@ -213,6 +213,10 @@ public class IREngine {
         private void calculateWeights() {
             // Calculate 'tf' for each query-word
             for (String queryWord: lemmaWords) {
+                // This queryWord is not in postingList
+                if (postingList.get(queryWord) == null) {
+                    continue;
+                }
                 // This queryWord is a stopword
                 if (stopwordHashMap.get(queryWord) != null) {
                     continue;
