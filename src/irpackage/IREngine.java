@@ -12,13 +12,17 @@ public class IREngine {
     private BufferedReader bufferedReader;
     private FileReader fileReader;
     private HashMap<String, Boolean> stopwordHashMap;
-    private HashMap<String, WordProperties> postingList;
+    private HashMap<String, WordProperties> vocabulary;
+    private List<HashMap<String, Integer>> wordAndTFByDocs;
+    private HashMap<Integer, Double> docAndNorm;
 
     public IREngine(String lemmatizedWordsDirectory, String stopwordsPath) {
         this.lemmatizedWordsDirectory = lemmatizedWordsDirectory;
         this.stopwordsPath = stopwordsPath;
         lemmatization = new Lemmatization();
-        postingList = new HashMap<String, WordProperties>();
+        vocabulary = new HashMap<String, WordProperties>();
+        wordAndTFByDocs = new ArrayList();
+        docAndNorm = new HashMap<Integer, Double>();
         bufferedReader = null;
         fileReader = null;
     }
@@ -30,61 +34,74 @@ public class IREngine {
 
     private void indexing() {
         try {
-            String word;
             int numberOfAllDocs = 1400;
 
             for (int i = 1; i <= numberOfAllDocs; ++i) {
-                String filePath = lemmatizedWordsDirectory + i + ".txt";
+                String filePath = "/Users/dai/Downloads/LemmatizedWords/" + i + ".txt";
                 fileReader = new FileReader(filePath);
                 bufferedReader = new BufferedReader(fileReader);
-                word = bufferedReader.readLine();
-
-                int numOfWords = 0;
+                String word = bufferedReader.readLine();
+                wordAndTFByDocs.add(new HashMap<String, Integer>());
+                
                 while (word != null) {
-                    numOfWords += 1;
-                    // This word is not in postingList
-                    if (postingList.get(word) == null) {
+                	// This word is not in vocabulary
+                    if (vocabulary.get(word) == null) {
                         Posting posting = new Posting(i, 1);
                         WordProperties wordProperties = new WordProperties(1, 1, 0, posting);
-                        postingList.put(word, wordProperties);
-                        continue;
-                    }
-
-                    WordProperties wordProperties = postingList.get(word);
-                    int docIndex = wordProperties.getLastPosting().getDocIndex();
-                    // The posting list of this word has contained this doc already.
-                    if (docIndex == i) {
-                        // Increase 'fre' in wordProperties by 1
-                        wordProperties.Add(0, 1);
-                        Posting currentPosting = wordProperties.getLastPosting();
-                        // Increase 'tf' in posting by 1
-                        currentPosting.Add(1);
+                        vocabulary.put(word, wordProperties);
                     } else {
+                    	WordProperties wordProperties = vocabulary.get(word);
+                        int docIndex = wordProperties.getLastPosting().getDocIndex();
+                        // The posting list of this word has contained this doc already.
+                        if (docIndex == i) {
+                            // Increase 'fre' in wordProperties by 1
+                            wordProperties.Add(0, 1);
+                            Posting currentPosting = wordProperties.getLastPosting();
+                            // Increase 'tf' in posting by 1
+                            currentPosting.Add(1);
+                        } else {
 
-                        Posting newPosting = new Posting(i, 1);
-                        // Increase 'fre' in wordProperties by 1 and add the newPosting
-                        wordProperties.Add(1, 1, newPosting);
+                            Posting newPosting = new Posting(i, 1);
+                            // Increase 'fre' in wordProperties by 1 and add the newPosting
+                            wordProperties.Add(1, 1, newPosting);
+                        }
                     }
-                    word = bufferedReader.readLine();
-                }
 
-                // Reset bufferedReader
-                fileReader = new FileReader(filePath);
-                bufferedReader = new BufferedReader(fileReader);
-                word = bufferedReader.readLine();
-                while (word != null) {
-                    WordProperties wordProperties = postingList.get(word);
-                    Posting currentPosting = wordProperties.getLastPosting();
-                    currentPosting.normalizeTf(numOfWords);
+                    int currentDocIndex = i - 1;
+                    if (wordAndTFByDocs.get(currentDocIndex).containsKey(word)) {
+                    	// Increase 'tf' of word by 1
+                        int tf = wordAndTFByDocs.get(currentDocIndex).get(word);
+                        wordAndTFByDocs.get(i - 1).put(word, tf + 1);
+                    } else {
+                    	wordAndTFByDocs.get(currentDocIndex).put(word, 1);
+                    }
+                    
                     word = bufferedReader.readLine();
                 }
+                
+            }
+            
+            // Calculate Norm
+            for (int docIndex = 1; docIndex <= wordAndTFByDocs.size(); ++docIndex) {
+            	double norm = 0;
+            	HashMap<String, Integer>wordAndTF = wordAndTFByDocs.get(docIndex - 1);
+            	
+				for (String word: wordAndTF.keySet()) {
+					int tf = wordAndTF.get(word);
+					WordProperties wordProperties = vocabulary.get(word);
+	                double idf = wordProperties.calculateIdf(numberOfAllDocs);
+	                wordProperties.updateIdf(idf);
+					norm += Math.pow(tf*idf, 2);
+				}
+				norm = Math.sqrt(norm);
+				
+				docAndNorm.put(docIndex, norm);
             }
 
-            //Calculate idf and tf.idf
-            for (String mapKey: postingList.keySet()) {
-                WordProperties wordProperties = postingList.get(mapKey);
-                double idf = wordProperties.calculateIdf(numberOfAllDocs);
-                wordProperties.calculateWordWeightForDoc(idf);
+            //Calculate idf and (tf.idf)/ Norm
+            for (String word: vocabulary.keySet()) {
+                WordProperties wordProperties = vocabulary.get(word);
+                wordProperties.calculateWordWeightForDoc(docAndNorm);
             }
 
         } catch (IOException e) {
@@ -141,7 +158,7 @@ public class IREngine {
             queryWordWeights.addElement(weight);
 
             // This queryWord isn't in postingList
-            WordProperties wordProperties = postingList.get(queryWord);
+            WordProperties wordProperties = vocabulary.get(queryWord);
             if (wordProperties != null) {
                 List<Posting> postingList = wordProperties.getPostingList();
                 // Create docWordWeightHashMap
@@ -213,8 +230,8 @@ public class IREngine {
         private void calculateWeights() {
             // Calculate 'tf' for each query-word
             for (String queryWord: lemmaWords) {
-                // This queryWord is not in postingList
-                if (postingList.get(queryWord) == null) {
+                // This queryWord is not in vocabulary
+                if (vocabulary.get(queryWord) == null) {
                     continue;
                 }
                 // This queryWord is a stopword
@@ -233,7 +250,7 @@ public class IREngine {
 
             // Calculate tf.idf for each query-word
             for (String queryWord: wordWeights.keySet()) {
-                WordProperties wordProperties = postingList.get(queryWord);
+                WordProperties wordProperties = vocabulary.get(queryWord);
                 // If this word isn't in vocabulary;
                 if (wordProperties == null) {
                     wordWeights.put(queryWord, 0.0);

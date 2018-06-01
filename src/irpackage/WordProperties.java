@@ -1,6 +1,7 @@
 package irpackage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class WordProperties {
@@ -40,13 +41,12 @@ public class WordProperties {
 	}
 	
 	public double calculateIdf(int numOfAllDocs) {
-		this.idf = 1 + Math.log10(numOfAllDocs / this.numberOfDocs);
-		return this.idf;
+		return Math.log10(numOfAllDocs / this.numberOfDocs);
 	}
 	
-	public void calculateWordWeightForDoc(double idf) {
+	public void calculateWordWeightForDoc(HashMap<Integer, Double> docAndNorm) {
 		for (int i = 0; i < this.postings.size(); ++i) {
-			postings.get(i).calculateWeight(idf);
+			postings.get(i).calculateWeight(idf, docAndNorm);
 		}
 	}
 	
@@ -60,6 +60,10 @@ public class WordProperties {
 	
 	public Posting getLastPosting() {
 		return postings.get(postings.size() - 1); 
+	}
+	
+	public void updateIdf(double idf) {
+		this.idf = idf;
 	}
 	
 //	Posting searchFor(int index) {

@@ -1,5 +1,7 @@
 package irpackage;
 
+import java.util.HashMap;
+
 public class Posting {
 	int docIndex = 0;
 	double tf = 0;
@@ -20,12 +22,17 @@ public class Posting {
 		this.tf += fre;
 	}
 	
-	void calculateWeight(double idf) {
-		this.weightOfWord = tf * idf;
+	void calculateWeight(double idf, HashMap<Integer, Double> docAndNorm) {
+		double norm = docAndNorm.get(docIndex);
+		this.weightOfWord = (tf * idf) / norm;
 	}
 	
-	public void normalizeTf(double numOfWords) {
+	void normalizeTf(double numOfWords) {
 		tf = tf / numOfWords;
+	}
+	
+	double calculateNorm(double idf) {
+		return tf * idf;
 	}
 	
 	int compareTo(int index) {
