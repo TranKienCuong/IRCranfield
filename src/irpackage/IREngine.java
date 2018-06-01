@@ -37,7 +37,7 @@ public class IREngine {
             int numberOfAllDocs = 1400;
 
             for (int i = 1; i <= numberOfAllDocs; ++i) {
-                String filePath = "/Users/dai/Downloads/LemmatizedWords/" + i + ".txt";
+                String filePath = lemmatizedWordsDirectory + i + ".txt";
                 fileReader = new FileReader(filePath);
                 bufferedReader = new BufferedReader(fileReader);
                 String word = bufferedReader.readLine();
