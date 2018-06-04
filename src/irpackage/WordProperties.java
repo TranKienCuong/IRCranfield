@@ -41,7 +41,7 @@ public class WordProperties {
 	}
 	
 	public double calculateIdf(int numOfAllDocs) {
-		return Math.log10(numOfAllDocs / this.numberOfDocs);
+		return 1 + Math.log10(numOfAllDocs / this.numberOfDocs);
 	}
 	
 	public void calculateWordWeightForDoc(HashMap<Integer, Double> docAndNorm) {

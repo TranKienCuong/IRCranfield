@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+import irpackage.IREngine.Query;
+
 public class IREngine {
     private String lemmatizedWordsDirectory;
     private String stopwordsPath;
@@ -213,6 +215,91 @@ public class IREngine {
 
         Collections.sort(relevantDocs);
         return relevantDocs;
+    }
+
+
+    
+    public List<List<Double>> evaluate() {
+    	try {
+			String filePath = "web/TEST/query.txt";
+			fileReader = new FileReader(filePath);
+			bufferedReader = new BufferedReader(fileReader);
+			
+			String rawQuery = bufferedReader.readLine();
+			String query = rawQuery.substring(2, rawQuery.length() - 1);
+			int queryIndex = 1;
+			List<Double> averageQueryRecalls = new ArrayList<Double>();
+			List<Double> averageQueryPrecisions = new ArrayList<Double>();
+			while (query != null && queryIndex <= 100) {
+				String testFilePath = "web/TEST/RES/" + queryIndex + ".txt";
+				FileReader testFileReader = new FileReader(testFilePath);
+				BufferedReader resBufferedReader = new BufferedReader(testFileReader);
+				HashMap<Integer, Boolean> relevantDocTestHashMap = new HashMap<Integer, Boolean>();
+				String doc = resBufferedReader.readLine();
+				while (doc != null) {
+					Scanner s = new Scanner(doc);
+					// Skip the first number
+					s.nextInt();
+					
+					int docIndex = s.nextInt();
+					int relevantMeasure = s.nextInt();
+					if (relevantMeasure > 0) {
+						relevantDocTestHashMap.put(docIndex, true);
+					}
+					doc = resBufferedReader.readLine();
+					s.close();
+				}
+				testFileReader.close();
+				resBufferedReader.close();
+				
+				Query searchQuery = new Query(query);
+				List<Doc> relevantDocs = search(searchQuery);
+				double averageRecalls = 0;
+				double averagePrecisions = 0;
+				
+				for (int percentage = 10; percentage <= 100; percentage += 10) {
+					int matchCount = 0;
+					int numOfResultDocs = (int) (relevantDocs.size() * 0.01 * percentage);
+					for (int resultIndex = 0; resultIndex < numOfResultDocs; ++ resultIndex) {
+						int docIndex = relevantDocs.get(resultIndex).getDocIndex();
+						if (relevantDocTestHashMap.get(docIndex) != null) {
+							matchCount += 1;
+						}
+						averageRecalls = (double)(matchCount) / numOfResultDocs;
+						averagePrecisions = (double)(matchCount) / relevantDocTestHashMap.size();
+					}
+				}
+				averageRecalls = averageRecalls / 10;
+				averagePrecisions = averagePrecisions / 10;
+				
+				averageQueryRecalls.add(averageRecalls);
+				averageQueryPrecisions.add(averagePrecisions);
+				
+				queryIndex += 1;
+			}
+			
+			return Arrays.asList(averageQueryRecalls, averageQueryPrecisions);
+			
+		} catch (IOException e) {
+
+			e.printStackTrace();
+
+		} finally {
+			try {
+
+				if (bufferedReader != null)
+					bufferedReader.close();
+
+				if (fileReader != null)
+					fileReader.close();
+						
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+
+		}
+    	
+    	return null;
     }
 
     // This class represents a query used for a specific instance of IREngine

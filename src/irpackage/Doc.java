@@ -1,16 +1,16 @@
 package irpackage;
 
 public class Doc implements Comparable<Doc> {
-	public int doxIndex;
+	public int docIndex;
 	public double relevantValue;
 	
 	public Doc() {
-		this.doxIndex = 0;
+		this.docIndex = 0;
 		this.relevantValue = 0;
 	}
 	
 	public Doc(int docIndex, double relevantValue) {
-		this.doxIndex = docIndex;
+		this.docIndex = docIndex;
 		this.relevantValue = relevantValue;
 	}
 	
@@ -20,5 +20,13 @@ public class Doc implements Comparable<Doc> {
 			return 0;
 		}
 		return relevantValue < o.relevantValue ? 1 : -1;
+	}
+	
+	public int getDocIndex() {
+		return this.docIndex;
+	}
+	
+	public double getRelevantValue() {
+		return relevantValue;
 	}
 }

@@ -129,7 +129,7 @@
             }
             for (int i = startResult; i < startResult + resultsPerPage && i < numberOfResults; i++) {
                 Doc doc = relevantDocs.get(i);
-                out.println("<a href='Cranfield/" + doc.doxIndex + ".txt'>" + doc.doxIndex + ".txt</a>");
+                out.println("<a href='Cranfield/" + doc.docIndex + ".txt'>" + doc.docIndex + ".txt</a>");
                 out.println("<br>Rank: " + (i + 1));
                 out.println("<br>Relevant value: " + doc.relevantValue + "<br><br>");
             }
